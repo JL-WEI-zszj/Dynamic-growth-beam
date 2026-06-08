@@ -1,0 +1,1 @@
+# Control-of-Vibration-and-Configuration-Evolution-in-Hyperelastic-Beams-Driven-by-Dynamic-Growth
