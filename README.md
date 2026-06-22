@@ -26,9 +26,11 @@ All files are hosted in this repository. You can find:
 
 ### 1. Forward Vibration Analysis
 Within the framework of nonlinear elasticity, we derive the asymptotic equations with $O(h^2)$ accuracy that seamlessly couples bending stiffness, inertial corrections, and dynamic growth driving forces. Using the provided MATLAB script, the forward dynamic responses under base motions (accelerated/periodic) and prescribed spatio-temporal growth fields can be predicted.
+![Theory](https://github.com/JL-WEI-zszj/Dynamic-growth-beam/blob/main/theory.png)
 
 ### 2. Inverse Problem & Configuration Control
 To achieve precise shape control, we build an analytical inverse framework. For any prescribed target shape evolution path, the explicit required growth functions are derived analytically. 
+![Results](https://github.com/JL-WEI-zszj/Dynamic-growth-beam/blob/main/Results.png)
 
 Our results demonstrate that this inverse strategy can:
 1.  **High-precision configuration maintenance**.
