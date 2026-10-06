@@ -1,52 +1,78 @@
-# Vibrations and Shape-evolution Control of Hyperelastic Beams Driven by Dynamic Growth
+# Vibrations and Inverse Shape Programming of Hyperelastic Beams Driven by Dynamic Growth
 
-This repository provides the supplementary documents, source code, and validation profiles for the paper:
-**Vibrations and Shape-evolution Control of Hyperelastic Beams Driven by Dynamic Growth**.
+Supplementary equation notebook, MATLAB solver, movie, and illustrations for the manuscript by Jiale Wei, Jiong Wang, and Zhanfeng Li.
 
----
+## Overview
 
-## 📌 Overview
+The paper develops a dynamic finite-strain beam theory by applying a plane-strain assumption and thickness reduction to a three-dimensional incompressible hyperelastic continuum. The forward model describes nonlinear bending and vibration under base motion and prescribed growth fields. The beam reduction and numerical examples use the fixed-mass active-strain interpretation of the growth tensor.
 
-* This paper establishes a finite strain beam theory incorporating **dynamic growth** effects.
-* The forward analysis explicitly reveals the nonlinear vibration characteristics of the beam under the influence of base motions and spatiotemporal growth fields. Comparisons with 3D nonlinear finite element simulations validate the proposed model for capturing large-deformation dynamic responses. Nevertheless, the present model is applicable within the framework of plane-strain beams and diagonal through-thickness linear growth, where the accuracy depends on the truncated orders in $\varepsilon$ and $h_0$. Furthermore, an analytical inverse framework is established, enabling high-precision configuration maintenance and continuous time-varying path planning.
+An analytical inverse construction determines the longitudinal growth coefficients from a prescribed, kinematically compatible bottom-surface evolution path, including the inertial contribution. The examples demonstrate compensation of base-motion-induced bending and continuous shape programming.
 
----
+## Supplementary files
 
-## 📂 Supplementary Documents
+| File | Contents |
+| --- | --- |
+| [Key_Equations.nb](Key_Equations.nb) | Mathematica notebook containing the complete key equations, organized by section headings and short explanations before each equation block. It covers thickness recurrence relations, beam balances, averaged stress, the reduced rotation equation, and the inverse growth coefficients. |
+| [solve.m](solve.m) | MATLAB function for the forward dynamic problem, using spatial finite differences and adaptive implicit time integration. |
+| [Video.mp4](Video.mp4) | Supplementary Movie 1 showing dynamic responses and shape-programming examples. Use **View raw** on the file page to view or download the video. |
+| [theory.png](theory.png) | Illustration of the theoretical formulation. |
+| [Results.png](Results.png) | Illustration of the inverse shape-programming results. |
 
-All files are hosted in this repository. You can find:
+The notebook presents the complete expressions used at the key stages of the formulation, with explanatory text. Intermediate symbolic simplification commands and trial calculations are omitted.
 
-* **`Movie 1`**: Visualizes the dynamic responses and shape-programming processes. 
-    * *Tip*: To download or view the video, click the file in the repository, then click **"View raw"**.
-* **`Source Code`**: The complete, runnable MATLAB implementation of the high-order finite difference algorithm and adaptive time integration scheme used to numerically solve the nonlinear dynamic beam equations.
+## Running the MATLAB solver
 
----
+Download the repository and set its folder as the MATLAB current folder. The default symbolic input definitions require **Symbolic Math Toolbox**. Run:
 
-## 🛠️ Theory & Numerical Implementation
+```matlab
+R = solve();
+```
 
-### 1. Forward Vibration Analysis
-Within the framework of nonlinear elasticity, we derive the asymptotic equations with $O(h^2)$ accuracy that seamlessly couples bending stiffness, inertial corrections, and dynamic growth driving forces. Using the provided MATLAB script, the forward dynamic responses under base motions (accelerated/periodic) and prescribed spatio-temporal growth fields can be predicted.
-![Theory](https://github.com/JL-WEI-zszj/Dynamic-growth-beam/blob/main/theory.png)
+The default example uses a smoothly started periodic base motion, with longitudinal growth coefficients `Nl10 = 1`, `Nl11 = 0`, and `Nl12 = 0`. Its default settings are `h0 = 0.01`, `epsilon = 0.001`, `nGrid = 500`, and `Tmax = 20`. Coordinates and time in the solver are nondimensional.
 
-### 2. Inverse Problem & Configuration Control
-To achieve precise shape control, we build an analytical inverse framework. For any prescribed target shape evolution path, the explicit required growth functions are derived analytically. 
-![Results](https://github.com/JL-WEI-zszj/Dynamic-growth-beam/blob/main/Results.png)
+To specify another base motion or growth field, edit the five expressions `cx_sym`, `cz_sym`, `Nl10_sym`, `Nl11_sym`, and `Nl12_sym` in `user_symbolic_fields` inside [solve.m](solve.m). Their required derivatives are generated automatically.
 
-Our results demonstrate that this inverse strategy can:
-1.  **High-precision configuration maintenance**.
-2.  **Continuous time-varying path planning**.
+Alternatively, supply the complete numerical function-handle structure through the `F` option, following the fields listed in `validate_fields`. This route does not require Symbolic Math Toolbox.
 
----
+Solver and output settings can be passed in a structure. For example:
 
-## 💻 3D Finite Element Verification
+```matlab
+R = solve(struct('Tmax', 5, 'PlotResults', false, 'WriteFiles', false));
+```
 
-The theoretical and numerical solutions from our beam model are validated against **3D nonlinear finite element simulations** performed in COMSOL Multiphysics. 
+The solver uses a cell-centred Green kernel and ghost-point finite differences in space, and MATLAB's `ode15i` for adaptive integration of the implicit equations.
 
-* **Model Setup**: Incompressible Neo-Hookean constitutive model , discretized using second-order tetrahedral elements with plane strain constraints.
-* **Results**: The asymptotic model shows excellent quantitative agreement with the 3D FEM results , significantly improving computational efficiency.
+The returned structure `R` contains the sampled time, position and rotation fields, stretch quantities, and solver diagnostics. By default, the program also plots the results and creates an output folder containing free-end displacement data, selected shape profiles, and a shape image. Video export is enabled with `MakeVideo = true`.
 
-## 📝 Citation
+## Theory and shape programming
 
-If you find this repository or the paper helpful for your research, please cite our work:
+The reduced formulation retains thickness contributions through $h_0^2$ and the leading inertial contribution associated with $\varepsilon$. The equation notebook provides the complete expressions for the successive stages of the reduction.
+
+![Theoretical formulation](theory.png)
+
+The analytical inverse construction reconstructs the thickness-independent longitudinal growth coefficient and its first thickness coefficient. Together, they define the linear through-thickness growth field used to produce the prescribed evolution.
+
+The demonstrated applications include:
+
+- Open-loop compensation of bending induced by accelerated and periodic base motions.
+- Continuous evolution toward prescribed beam configurations.
+
+![Inverse shape-programming results](Results.png)
+
+## Finite element comparison
+
+The manuscript compares the reduced-model predictions with three-dimensional nonlinear finite element simulations in COMSOL Multiphysics. The finite element model uses an incompressible neo-Hookean material, second-order tetrahedral elements, and plane-strain constraints.
+
+The comparisons and parameter studies assess the accuracy of the dynamic beam model and the analytical inverse construction.
+
+## Citation
+
+For the current manuscript, please use:
 
 ```bibtex
+@unpublished{WeiDynamicGrowthBeam,
+  author = {Wei, Jiale and Wang, Jiong and Li, Zhanfeng},
+  title = {Vibrations and Inverse Shape Programming of Hyperelastic Beams Driven by Dynamic Growth},
+  note = {Manuscript}
+}
+```
